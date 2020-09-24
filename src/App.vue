@@ -38,9 +38,8 @@
   </div>
   <div class="o-courses">
     <div :id="course.courseId" v-for="course in courses" class="c-course">
-      <div :class="'c-course__icon c-course__icon--' + course.category.toLowerCase().trim()">
-
-      </div>
+      <div :class="'c-course__icon c-course__icon--' + course.category.toLowerCase().trim()"></div>
+      <div :class="'c-course__status c-course__status--' + course.status">{{status (course.status) }}</div>
       <div class="c-course__description">
         <h4>{{course.title}}</h4>
         <p>
@@ -61,8 +60,10 @@
     <form v-on:submit.prevent>
       <label for="name">Name</label>
       <input v-model="name" id="name" class="c-form__input" type="text" required />
+      <span class="c-form__error" :class="{'c-form__error--active': !name}">You must complete this field</span>
       <label for="bio">Bio</label>
-      <textarea v-model="bio" id="bio" class="c-form__text"></textarea>
+      <textarea required v-model="bio" id="bio" class="c-form__text"></textarea>
+      <span class="c-form__error" :class="{'c-form__error--active': !bio}">You must complete this field</span>
       <button class="c-form__button" @click="submit()">Submit</button>
     </form>
   </div>
@@ -116,6 +117,19 @@ export default {
         })
       }
     },
+    status: function(status) {
+      switch (status) {
+        case 'completed':
+          return 'Course completed'
+          break;
+        case 'progress':
+          return 'In progress'
+          break;
+        case 'unstarted':
+          return 'Not started'
+          break;
+      }
+    },
     expand: function(i) {
       event.target.classList.toggle('c-course__details-more--active');
       const list = document.getElementById('c-course__details-list' + i);
@@ -144,6 +158,11 @@ $white: #fff;
 *:before {
     box-sizing: border-box;
 }
+
+html {
+    font-size: 62.5%;
+}
+
 .l {
     &-default {
         font-family: Helvetica, Arial, sans-serif;
@@ -153,6 +172,7 @@ $white: #fff;
         max-width: 1200px;
         width: 100%;
         margin: 24px auto;
+        font-size: 1rem;
     }
 }
 
@@ -164,29 +184,38 @@ $white: #fff;
         padding: 16px;
         min-height: 196px;
         display: flex;
+        flex-flow: column;
+        @media (min-width: 768px) {
+            flex-flow: row;
+        }
     }
     &-courses {
-        margin: 16px auto;
-        display: grid;
-        grid-template-rows: auto;
-        grid-template-columns: repeat(1, 1fr);
+        margin: 16px 0;
+        width: 100%;
         @media (min-width: 768px) {
             grid-template-columns: repeat(3, 1fr);
+            display: grid;
+            grid-template-rows: auto;
+
+            .c-course:first-child {
+                margin-left: 0;
+            }
+            .c-course:last-child {
+                margin-right: 0;
+            }
         }
         @media (min-width: 992px) {
             grid-template-columns: repeat(4, 1fr);
-        }
-        .c-course:first-child {
-            margin-left: 0;
-        }
-        .c-course:last-child {
-            margin-right: 0;
         }
     }
     &-filters {
         margin: 24px 0;
         display: flex;
         align-items: center;
+        flex-flow: column;
+        @media (min-width: 768px) {
+            flex-flow: row;
+        }
         .c-filters__button:first-child {
             margin-left: 0;
         }
@@ -211,10 +240,10 @@ $white: #fff;
         }
         &__avatar {
             padding: 32px;
+            background: url("./assets/svgs/avatar.svg") no-repeat top center;
+            background-size: contain;
             @media (min-width: 768px) {
                 max-width: 10%;
-                background: url("./assets/svgs/avatar.svg") no-repeat top center;
-                background-size: contain;
             }
         }
         &__details {
@@ -271,6 +300,8 @@ $white: #fff;
         border-radius: 4px;
         border: 1px solid $grey;
         margin-left: 16px;
+        height: fit-content;
+        margin-bottom: 24px;
         &__icon {
             background-repeat: no-repeat;
             background-size: contain;
@@ -288,6 +319,11 @@ $white: #fff;
             &--javascript {
                 // background-image: url('./assets/svgs/javascript.svg');
             }
+        }
+        &__status {
+          text-align: center;
+          padding: 8px;
+          font-weight: bold;
         }
         &__description {
             background-color: $lightGrey;
@@ -316,8 +352,8 @@ $white: #fff;
                     background-color: $darkGrey;
                     color: $white;
                     &:after {
-                      background-image: url("./assets/svgs/arrows-white.svg");
-                      transform: rotate(180deg);
+                        background-image: url("./assets/svgs/arrows-white.svg");
+                        transform: rotate(180deg);
                     }
                 }
             }
@@ -350,8 +386,11 @@ $white: #fff;
             font-size: 1rem;
             color: $darkGrey;
             font-weight: bold;
-            min-width: 200px;
-            margin: 0 16px;
+            min-width: 100px;
+            margin-bottom: 16px;
+            @media (min-width: 768px) {
+                margin: 0 16px;
+            }
         }
     }
     &-form {
@@ -376,6 +415,15 @@ $white: #fff;
             color: $darkGrey;
             font-weight: bold;
             width: 200px;
+        }
+        &__error {
+            font-weight: bold;
+            color: #f00;
+            margin-bottom: 16px;
+            display: none;
+            &--active {
+                display: block;
+            }
         }
     }
 }
