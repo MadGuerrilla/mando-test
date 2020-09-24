@@ -13,7 +13,7 @@
     {
       "courseId": "002",
       "title": "JavaScript For Beginners",
-      "category": "javaScript",
+      "category": "javascript",
       "status": "progress",
       "description": "Start your new career in web development by learning the fundamentals of HTML",
       "details": ["Basic", "Loops, Arrays, Objects", "The DOM", "Functions", "Objects"]
